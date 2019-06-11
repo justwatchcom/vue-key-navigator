@@ -749,6 +749,11 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
+"@types/bezier-js@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@types/bezier-js/-/bezier-js-0.0.8.tgz#e9dcdafa72ed4fe0decc72e35f8422fd402c269d"
+  integrity sha512-X+sQeRVDMwlQYZEqQcVOVqCKrZa7nKVuYirlJCJQRBpucQSzPGxjv7VAncCGe0cr1v1hFuLAzK11XzjOPqQ0kA==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -1932,6 +1937,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+bezier-js@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/bezier-js/-/bezier-js-2.4.0.tgz#8fb65113e01c7d3e443aa9fd66921478befc24a0"
+  integrity sha512-ttwqGL47RtYOoZy10oFJZ1VlEC6w1eJW1xMPBAvEx57cTWgmaJNr/c2ZLMr/O2RD50saR0OaLBIpgyZ7rkHLSw==
 
 bfj@^6.1.1:
   version "6.1.1"
@@ -10321,6 +10331,11 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
+vue-book@0.1.0-alpha.18:
+  version "0.1.0-alpha.18"
+  resolved "https://registry.yarnpkg.com/vue-book/-/vue-book-0.1.0-alpha.18.tgz#f37af72a66dcee4e32ff22587b19c2103e1478c5"
+  integrity sha512-Oy3hFpiqiSTXUoSozRwiekAi1gt05sn1LZ4R/H+hNiC++wSML9MAChgMnQytXGJHn7kUrUo4r8/9b+tNyk4rEQ==
+
 vue-class-component@^7.0.1, vue-class-component@^7.0.2:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.1.0.tgz#b33efcb10e17236d684f70b1e96f1946ec793e87"
@@ -10388,6 +10403,11 @@ vue-property-decorator@^8.1.0:
   integrity sha512-K+PUT17ZEMWyhrKZnl4Fc9qMyFpMcjVbZJBwx4BpA8BXfaspaTeFdoHuk1aywC/+4G86sxIr/5n4IQUQLecSWw==
   dependencies:
     vue-class-component "^7.0.1"
+
+vue-router@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.0.6.tgz#2e4f0f9cbb0b96d0205ab2690cfe588935136ac3"
+  integrity sha512-Ox0ciFLswtSGRTHYhGvx2L44sVbTPNS+uD2kRISuo8B39Y79rOo0Kw0hzupTmiVtftQYCZl87mwldhh2L9Aquw==
 
 vue-style-loader@^4.1.0:
   version "4.1.2"
