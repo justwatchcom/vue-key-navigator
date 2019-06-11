@@ -16,7 +16,7 @@ interface RelativePosition {
   focusElement?: FocusElement;
 }
 
-interface NavigationServiceOptions {
+export interface NavigationServiceOptions {
   backHandler?: (e: Event) => boolean;
 }
 

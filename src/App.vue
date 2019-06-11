@@ -1,17 +1,19 @@
 <template>
-  <router-view/>
+  <div>
+    <router-view/>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { createRoute } from 'vue-book'
-import { Router } from 'vue-router'
+import { createRoute, VueBookComponents } from 'vue-book'
+import Router from 'vue-router'
 
 Vue.use(Router)
+Vue.use(VueBookComponents)
 
-@Component({})
-export default class App extends Vue {
-  router = new Router({
+@Component({
+  router: new Router({
     routes: [
       createRoute({
         requireContext: require.context('./..', true, /.demo.vue$/),
@@ -22,7 +24,9 @@ export default class App extends Vue {
         redirect: '/demo',
       },
     ],
-  })
+  }),
+})
+export default class App extends Vue {
 }
 </script>
 

@@ -10,13 +10,18 @@ interface VNodeFocusListener {
 }
 
 export interface Position {
-  x: number;
-  y: number;
+  x: number
+  y: number
 }
 
 export interface FocusEvent {
-  event: Event;
-  element: Element;
+  event: Event
+  element: Element
+}
+
+export interface NavigationServiceOptions {
+  backHandler?: (e: Event) => boolean
+  disabled?: boolean
 }
 
 export let navigationService: NavigationService
@@ -35,7 +40,7 @@ export class FocusElement implements Payload {
   private isSelected = false
   getIsDefault: () => boolean = (): boolean => false
   vnode: VNode
-  value: number
+  value: number = 0
   mutationObserver: MutationObserver
 
   constructor (vnode: VNode, params?: { order?: number; isDefault?: () => boolean }) {
@@ -299,11 +304,11 @@ export class FocusElement implements Payload {
 }
 
 export default {
-  install: function <NavigationServiceOptions> (Vue: any, options?: NavigationServiceOptions) {
-    //@ts-ignore
+  install: (Vue: any, options?: NavigationServiceOptions): void => {
+    // @ts-ignore
     window.navigationService = navigationService = new NavigationService(options)
 
-    if (!IS_FIRETV) {
+    if (options!.disabled) {
       Vue.directive('focus', {})
       return
     }
