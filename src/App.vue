@@ -27,6 +27,7 @@ Vue.use(VueBookComponents)
   }),
 })
 export default class App extends Vue {
+
 }
 </script>
 
