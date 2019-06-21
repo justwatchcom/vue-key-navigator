@@ -1,5 +1,9 @@
-import { FocusElement, Position, navigationService } from './focus.directive'
-import { Tree } from './tree'
+import {
+  FocusElement,
+  Position,
+  navigationService,
+} from './focus.directive'
+import { NodeTree } from './nodeTree'
 
 export enum NavigationServiceDirection {
   Up = 'up',
@@ -10,32 +14,42 @@ export enum NavigationServiceDirection {
   Back = 'back',
 }
 
+export interface NavigationServiceOptions {
+  backHandler?: (e: Event) => boolean
+  disabled?: boolean
+  onSelect?: () => void
+  onMove?: () => void
+}
+
 interface RelativePosition {
   direction: NavigationServiceDirection;
   distance: number;
   focusElement?: FocusElement;
 }
 
-export interface NavigationServiceOptions {
-  backHandler?: (e: Event) => boolean;
-}
-
 interface FullTree {
-  tree: Tree<FocusElement>;
+  tree: NodeTree<FocusElement>;
   focusElement: FocusElement | undefined;
 }
 
 export class NavigationService {
   keyCodes: { [key: number]: string } = {}
   trees: FullTree[] = []
-  moveSound: HTMLAudioElement
-  clickSound: HTMLAudioElement
+  onSelect: () => void = () => {}
+  onMove: () => void = () => {}
   private enable: boolean = true
   isNavigating: boolean = true
 
   backHandler?: (e: Event) => boolean
 
-  constructor (options?: NavigationServiceOptions) {
+  constructor (options: NavigationServiceOptions) {
+    if (options.onSelect) {
+      this.onSelect = options.onSelect
+    }
+    if (options.onMove) {
+      this.onMove = options.onMove
+    }
+
     const keys: { [name: string]: number[] } = {
       up: [38],
       down: [40],
@@ -48,9 +62,6 @@ export class NavigationService {
     for (let keyName in NavigationServiceDirection) {
       keys[NavigationServiceDirection[keyName]].forEach((code: number) => (this.keyCodes[code] = keyName))
     }
-
-    this.moveSound = new Audio('/sound/move.wav')
-    this.clickSound = new Audio('/sound/click.wav')
 
     if (options) {
       this.backHandler = options.backHandler
@@ -65,18 +76,18 @@ export class NavigationService {
   }
 
   push () {
-    this.tree = new Tree<FocusElement>()
+    this.tree = new NodeTree<FocusElement>()
   }
 
   pop () {
     this.trees.pop()
   }
 
-  set tree (t: Tree<FocusElement>) {
+  set tree (t: NodeTree<FocusElement>) {
     this.trees.push({ tree: t, focusElement: undefined })
   }
 
-  get tree (): Tree<FocusElement> {
+  get tree (): NodeTree<FocusElement> {
     return this.trees[this.trees.length - 1].tree
   }
 
@@ -246,7 +257,8 @@ export class NavigationService {
         case NavigationServiceDirection.Enter:
           let el = this.currentElement
           if (el) {
-            this.clickSound.play()
+            this.onSelect()
+            // this.clickSound.play()
             el.enter(e)
           }
           e.preventDefault()
@@ -268,8 +280,9 @@ export class NavigationService {
             this.cleanTree() // in case the current element gets destroyed
           }
 
-          this.moveSound.play()
-          console.log(this.findClosest(this.currentElement, lowerCaseAction, e))
+          this.onMove()
+          // this.moveSound.play()
+          this.findClosest(this.currentElement, lowerCaseAction, e)
           e.preventDefault()
       }
     })
@@ -301,7 +314,6 @@ export class NavigationService {
       return
     }
 
-    this.clickSound.play()
     this.goBack(this.currentElement, event)
     event.preventDefault()
   }

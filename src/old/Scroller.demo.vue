@@ -7,7 +7,8 @@
           :key="n"
           ref="vertical-item"
           style="width: 100px; min-width: 100px; height: 100px; background-color: peachpuff; margin: 10px;"
-        >{{ n }}
+        >
+          {{ n }}
         </div>
       </div>
       <button
@@ -18,6 +19,7 @@
         {{ n }}
       </button>
     </VbCard>
+
     <VbCard title="Horizontal only">
       <div style="width: 200px; height: 200px; overflow: scroll; scroll-behavior: smooth;" ref="horizontal-container">
         <div
@@ -25,7 +27,8 @@
           :key="n"
           ref="horizontal-item"
           style="width: 100px; height: 100px; background-color: peachpuff; margin: 10px"
-        >{{ n }}
+        >
+          {{ n }}
         </div>
       </div>
       <button
@@ -36,6 +39,7 @@
         {{ n }}
       </button>
     </VbCard>
+
     <VbCard title="Both directions">
       NOTE: Goes only in one direction at a time
       <div
@@ -76,17 +80,13 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Scroller, { Point } from './scroller.service'
 
-@Component({
-  async mounted () {
-    this.scrollers = {
-      'vertical': new Scroller(this.$refs['vertical-container'], true, false, new Point(0, 0)),
-      'horizontal': new Scroller(this.$refs['horizontal-container'], false, true, new Point(0, 0)),
-      'both-directions': new Scroller(this.$refs['both-directions-container'], true, true, new Point(0, 0)),
-    }
-  },
-})
+@Component({})
 export default class Demo extends Vue {
   itemsNumber: number = 10
-  scrollers: { [key: string]: Scroller }
+  scrollers: { [key: string]: Scroller } = {
+    'vertical': new Scroller(this.$refs['vertical-container'], true, false, new Point(0, 0)),
+    'horizontal': new Scroller(this.$refs['horizontal-container'], false, true, new Point(0, 0)),
+    'both-directions': new Scroller(this.$refs['both-directions-container'], true, true, new Point(0, 0)),
+  }
 }
 </script>

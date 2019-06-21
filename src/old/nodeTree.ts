@@ -15,9 +15,9 @@ export class Node<T extends Payload> {
 }
 
 /**
- * Tree implements a recursive datastructure with a single root node and multiple children nodes.
+ * NodeTree implements a recursive datastructure with a single root node and multiple children nodes.
  */
-export class Tree<T extends Payload> {
+export class NodeTree<T extends Payload> {
   _root: Node<T> | undefined
   unassigned: Node<T>[]
 
