@@ -1,6 +1,6 @@
-import { PluginObject, VNode } from 'vue'
+import { PluginObject } from 'vue'
 import { Vue as _Vue } from 'vue/types/vue'
-import { KeyNavigator } from './KeyNavigator'
+import { KeyNavigator, CurrentKeyRoute } from './KeyNavigator'
 
 export interface KeyRoute {
   name: string,
@@ -10,6 +10,7 @@ export interface KeyRoute {
 export interface VueKeyNavigatorPluginOptions {
   disabled?: boolean,
   keyRoutes?: KeyRoute[],
+  currentKeyRoutes?: CurrentKeyRoute[]
 }
 
 export const VueKeyNavigatorPlugin: PluginObject<VueKeyNavigatorPluginOptions> = {
@@ -19,6 +20,11 @@ export const VueKeyNavigatorPlugin: PluginObject<VueKeyNavigatorPluginOptions> =
       return
     }
 
-    Vue.prototype.$keyNavigatorGlobal = new KeyNavigator(options)
+    const keyNavigator = new KeyNavigator(options)
+
+    Vue.prototype.$keyNavigatorGlobal = keyNavigator
+
+    // Make object reactive
+    new Vue({ data: () => ({ keyNavigator }) })
   },
 }

@@ -16,6 +16,7 @@
     "vue": "^2.6.10",
     "vue-book": "0.1.0-alpha.18",
     "vue-class-component": "^7.0.2",
+    "vue-mixin-decorator": "^1.1.1",
     "vue-property-decorator": "^8.2.1",
     "vue-router": "^3.0.6"
   },

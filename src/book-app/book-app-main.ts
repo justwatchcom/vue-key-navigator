@@ -13,6 +13,9 @@ Vue.use(VueKeyNavigatorPlugin, {
       ],
     },
   ],
+  currentKeyRoutes: [
+    {name: 'title', params: {id: 2}},
+  ],
 })
 
 new Vue({
