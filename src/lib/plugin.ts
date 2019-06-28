@@ -1,30 +1,23 @@
 import { PluginObject } from 'vue'
 import { Vue as _Vue } from 'vue/types/vue'
-import { KeyNavigator, CurrentKeyRoute } from './KeyNavigator'
+import { KeyRouter, NodePathItem } from './KeyRouter'
 
-export interface KeyRoute {
+export interface KeyRouterNode {
   name: string,
-  children: KeyRoute[]
+  children: KeyRouterNode[]
 }
 
-export interface VueKeyNavigatorPluginOptions {
+export interface KeyRouterPluginOptions {
   disabled?: boolean,
-  keyRoutes?: KeyRoute[],
-  currentKeyRoutes?: CurrentKeyRoute[]
+  keyRouterNodes?: KeyRouterNode[],
+  nodePath?: NodePathItem[]
 }
 
-export const VueKeyNavigatorPlugin: PluginObject<VueKeyNavigatorPluginOptions> = {
-  install: (Vue: typeof _Vue, options: VueKeyNavigatorPluginOptions = {}): void => {
-    // TODO https://github.com/justwatchcom/vue-key-navigator/issues/5
-    if (options.disabled) {
-      return
-    }
-
-    const keyNavigator = new KeyNavigator(options)
-
-    Vue.prototype.$keyNavigatorGlobal = keyNavigator
+export const VueKeyNavigatorPlugin: PluginObject<KeyRouterPluginOptions> = {
+  install: (Vue: typeof _Vue, options: KeyRouterPluginOptions = {}): void => {
+    Vue.prototype.$keyRouter = new KeyRouter(options)
 
     // Make object reactive
-    new Vue({ data: () => ({ keyNavigator }) })
+    new Vue({ data: () => ({ keyNavigator: Vue.prototype.$keyRouter }) })
   },
 }

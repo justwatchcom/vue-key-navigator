@@ -5,16 +5,29 @@ import { VueKeyNavigatorPlugin } from '../lib/plugin'
 Vue.config.productionTip = false
 
 Vue.use(VueKeyNavigatorPlugin, {
-  keyRoutes: [
+  keyRouterNodes: [
     {
       name: 'titles',
       children: [
-        { name: 'title' },
+        {
+          name: 'popular',
+          children: [
+            { name: 'title' },
+          ],
+        },
+        {
+          name: 'new',
+          children: [
+            { name: 'title' },
+          ],
+        },
       ],
     },
   ],
-  currentKeyRoutes: [
-    {name: 'title', params: {id: 2}},
+  nodePath: [
+    { name: 'titles' },
+    { name: 'popular' },
+    { name: 'title', params: { id: 2 } },
   ],
 })
 

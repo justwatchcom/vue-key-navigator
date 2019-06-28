@@ -1,6 +1,7 @@
-import { VueKeyNavigatorPluginOptions, KeyRoute } from './plugin'
-import { LocalKeyNavigator } from './LocalKeyNavigator'
-import { KeyNavigatorMixin } from './KeyNavigatorMixin'
+import { KeyRouterPluginOptions, KeyRouterNode } from './plugin'
+import { ComponentKeyRouter } from './ComponentKeyRouter'
+import { KeyRouterMixin } from './KeyRouterMixin'
+import { isSameRoot } from './key-router-helpers'
 
 export enum NavigationServiceDirection {
   Up = 'up',
@@ -11,14 +12,9 @@ export enum NavigationServiceDirection {
   Back = 'back',
 }
 
-export interface CurrentKeyRoute {
+export interface NodePathItem {
   name: string
-  params: { [key: string]: any }
-}
-
-interface RelativePosition {
-  direction: NavigationServiceDirection
-  distance: number
+  params?: { [key: string]: any }
 }
 
 export interface Position {
@@ -26,25 +22,24 @@ export interface Position {
   y: number
 }
 
-export class KeyNavigator {
+export class KeyRouter {
   disabled: boolean = false
-  keyRoutes?: KeyRoute[]
-  registeredLocalKeyNavigators: LocalKeyNavigator[] = []
+  keyRoutes?: KeyRouterNode[]
+  componentKeyRouters: ComponentKeyRouter[] = []
   keyCodes: { [key: number]: string } = {}
-  currentKeyRoutes: CurrentKeyRoute[] = []
+  nodePath: NodePathItem[] = []
 
-  constructor (options: VueKeyNavigatorPluginOptions) {
+  constructor (options: KeyRouterPluginOptions) {
     if (options.disabled) {
       this.disabled = options.disabled
     }
-
-    if (!Array.isArray(options.keyRoutes)) {
+    if (!Array.isArray(options.keyRouterNodes)) {
       throw new Error('Please provide some key routes.')
     }
-    this.keyRoutes = options.keyRoutes
+    this.keyRoutes = options.keyRouterNodes
 
-    if (options.currentKeyRoutes) {
-      this.currentKeyRoutes = options.currentKeyRoutes
+    if (options.nodePath) {
+      this.nodePath = options.nodePath
     }
 
     const keys: { [name: string]: number[] } = {
@@ -63,21 +58,20 @@ export class KeyNavigator {
     this.registerGlobalKeyEvents()
   }
 
-  register (component: KeyNavigatorMixin): LocalKeyNavigator {
-    const localKeyNavigator = new LocalKeyNavigator(this, component)
-    this.registeredLocalKeyNavigators.push(localKeyNavigator)
-    return localKeyNavigator
+  register (component: KeyRouterMixin): ComponentKeyRouter {
+    const componentKeyRouter = new ComponentKeyRouter(this, component)
+    this.componentKeyRouters.push(componentKeyRouter)
+    return componentKeyRouter
   }
 
-  unregister (localKeyNavigator: LocalKeyNavigator): void {
-    this.registeredLocalKeyNavigators = this.registeredLocalKeyNavigators.filter(registeredLocalKeyNavigator => registeredLocalKeyNavigator !== localKeyNavigator)
+  unregister (localKeyNavigator: ComponentKeyRouter): void {
+    this.componentKeyRouters = this.componentKeyRouters.filter(registeredComponentKeyRouter => registeredComponentKeyRouter !== localKeyNavigator)
   }
 
   registerGlobalKeyEvents () {
     if (this.disabled) {
       return
     }
-
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       const keyCode = e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which
       let keyName = this.keyCodes[keyCode]
@@ -103,9 +97,9 @@ export class KeyNavigator {
           // if (this.preventNavigation(e, lowerCaseAction)) {
           //   return
           // }
-          const localKeyNavigator = this.findClosest(this.focusedLocalKeyNavigator, lowerCaseAction)
-          if (localKeyNavigator) {
-            this.focusOnLocalKeyNavigator(localKeyNavigator)
+          const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, lowerCaseAction)
+          if (componentKeyRouter) {
+            componentKeyRouter.selectRoute()
           }
 
           // this.findClosest(this.currentElement, lowerCaseAction, e)
@@ -118,29 +112,32 @@ export class KeyNavigator {
     })
   }
 
-  focusOnLocalKeyNavigator (localKeyNavigator: LocalKeyNavigator) {
-    this.currentKeyRoutes = localKeyNavigator.component.selectRoute(this.currentKeyRoutes, this.currentKeyRoutes[this.currentKeyRoutes.length - 1])
-  }
-
   findClosest (
-    currentLocalKeyNavigator: LocalKeyNavigator,
+    currentComponentKeyRouter: ComponentKeyRouter,
     navigationServiceDirection: NavigationServiceDirection,
-  ): LocalKeyNavigator | null {
-    let currentElementPosition = currentLocalKeyNavigator.position
+  ): ComponentKeyRouter | null {
+    let currentElementPosition = currentComponentKeyRouter.position
 
-    let closestLocalKeyNavigator: LocalKeyNavigator | null = null
+    let closestLocalKeyNavigator: ComponentKeyRouter | null = null
     let closestDistance = Infinity
-    this.registeredLocalKeyNavigators.forEach(localKeyNavigator => {
-      if (currentLocalKeyNavigator === localKeyNavigator) {
+    this.componentKeyRouters.forEach(componentKeyRouter => {
+      // Ignore current component
+      if (currentComponentKeyRouter === componentKeyRouter) {
         return
       }
-      const position = localKeyNavigator.position
+      // Ignore components from different roots.
+      if (!isSameRoot(currentComponentKeyRouter.nodePath, componentKeyRouter.nodePath)) {
+        return
+      }
+      // Ignore components in other directions.
+      const position = componentKeyRouter.position
       if (!this.isInDirection(currentElementPosition, position, navigationServiceDirection)) {
         return
       }
+      // Find the closest one
       const distance = this.getDistance(currentElementPosition, position)
       if (distance < closestDistance) {
-        closestLocalKeyNavigator = localKeyNavigator
+        closestLocalKeyNavigator = componentKeyRouter
         closestDistance = distance
       }
     })
@@ -169,36 +166,11 @@ export class KeyNavigator {
     return Math.sqrt(abs.x * abs.x + abs.y * abs.y)
   }
 
-  private getRelativePosition (base: Position, satellite: Position): RelativePosition {
-    let abs = { x: satellite.x - base.x, y: satellite.y - base.y }
-    let horizontal = Math.abs(abs.x) - Math.abs(abs.y) >= 0
-    let direction: NavigationServiceDirection
-    if (horizontal) {
-      if (abs.x < 0) {
-        direction = NavigationServiceDirection.Left
-      } else {
-        direction = NavigationServiceDirection.Right
-      }
-    } else {
-      if (abs.y < 0) {
-        direction = NavigationServiceDirection.Up
-      } else {
-        direction = NavigationServiceDirection.Down
-      }
-    }
-
-    return { direction, distance: Math.sqrt(abs.x * abs.x + abs.y * abs.y) }
-  }
-
-  get focusedLocalKeyNavigator (): LocalKeyNavigator {
-    const focusedLocalKeyNavigator = this.registeredLocalKeyNavigators.find(this.isFocused.bind(this))
+  get focusedComponentKeyRouter (): ComponentKeyRouter {
+    const focusedLocalKeyNavigator = this.componentKeyRouters.find(componentKeyRouter => componentKeyRouter.isCurrentRoute())
     if (!focusedLocalKeyNavigator) {
       throw new Error('No focused key navigator found')
     }
     return focusedLocalKeyNavigator
-  }
-
-  isFocused (localKeyNavigator: LocalKeyNavigator): boolean {
-    return localKeyNavigator.component.checkRoute(this.currentKeyRoutes, this.currentKeyRoutes[this.currentKeyRoutes.length - 1])
   }
 }

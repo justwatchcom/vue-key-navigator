@@ -1,9 +1,9 @@
 // 1. Make sure to import 'vue' before declaring augmented types
-import { KeyNavigator } from './KeyNavigator'
+import { KeyRouter } from './KeyRouter'
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $keyNavigatorGlobal: KeyNavigator
+    $keyRouter: KeyRouter
   }
 }
 
