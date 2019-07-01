@@ -2,6 +2,7 @@
   "name": "vue-key-navigator",
   "version": "0.1.0-alpha.1",
   "private": false,
+  "license": "MIT",
   "main": "dist/src/index.esm.js",
   "module": "dist/src/index.esm.js",
   "scripts": {
