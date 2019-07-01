@@ -25,9 +25,3 @@ export default class KeyRouterLink extends Mixins<KeyRouterMixin>(KeyRouterMixin
   }
 }
 </script>
-
-<style lang="scss">
-.KeyRouterLink {
-
-}
-</style>

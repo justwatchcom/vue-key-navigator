@@ -1,6 +1,7 @@
 import { PluginObject } from 'vue'
 import { Vue as _Vue } from 'vue/types/vue'
 import { KeyRouter, NodePathItem } from './KeyRouter'
+import KeyRouterLink from '../demos/KeyRouterLink.vue'
 
 export interface KeyRouterNode {
   name: string,
@@ -19,5 +20,7 @@ export const VueKeyNavigatorPlugin: PluginObject<KeyRouterPluginOptions> = {
 
     // Make object reactive
     new Vue({ data: () => ({ keyNavigator: Vue.prototype.$keyRouter }) })
+
+    Vue.component('KeyRouterLink', KeyRouterLink)
   },
 }
