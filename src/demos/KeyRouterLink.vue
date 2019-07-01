@@ -1,5 +1,5 @@
 <template>
-  <div class="KeyRouterLink">
+  <div class="KeyRouterLink" :disabled="disabled">
     <slot/>
   </div>
 </template>

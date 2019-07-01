@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { Prop } from 'vue-property-decorator'
 import { Mixin } from 'vue-mixin-decorator'
 import { ComponentKeyRouter } from './ComponentKeyRouter'
 import { NodePathItem } from './KeyRouter'
@@ -7,6 +8,8 @@ import { NodePathItem } from './KeyRouter'
 export class KeyRouterMixin extends Vue {
   $componentKeyRouter!: ComponentKeyRouter
   nodePath!: NodePathItem[]
+
+  @Prop({type: Boolean, default: false}) disabled!: boolean
 
   beforeCreate () {
     if (!this.$keyRouter) {

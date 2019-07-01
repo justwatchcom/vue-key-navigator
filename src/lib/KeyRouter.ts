@@ -83,20 +83,13 @@ export class KeyRouter {
 
       switch (lowerCaseAction) {
         case NavigationServiceDirection.Enter:
-          // let el = this.currentElement
-          // if (el) {
-          //   this.onSelect()
-          // el.enter(e)
-          // }
+          this.focusedComponentKeyRouter.component.$emit('select')
           e.preventDefault()
           break
         case NavigationServiceDirection.Back:
           // this.back(e)
           break
         default:
-          // if (this.preventNavigation(e, lowerCaseAction)) {
-          //   return
-          // }
           const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, lowerCaseAction)
           if (componentKeyRouter) {
             componentKeyRouter.selectRoute()
@@ -121,8 +114,12 @@ export class KeyRouter {
     let closestLocalKeyNavigator: ComponentKeyRouter | null = null
     let closestDistance = Infinity
     this.componentKeyRouters.forEach(componentKeyRouter => {
-      // Ignore current component
+      // Ignore current component.
       if (currentComponentKeyRouter === componentKeyRouter) {
+        return
+      }
+      // Ignore disabled components.
+      if (componentKeyRouter.component.disabled) {
         return
       }
       // Ignore components from different roots.

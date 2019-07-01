@@ -4,6 +4,7 @@
     :class="{'NavigatableListItem--focus': focused}"
     :route="keyRouteProp"
     :focused.sync="focused"
+    :disabled="disabled"
   >
     Focus: {{focused}}
   </KeyRouterLink>
@@ -20,6 +21,7 @@ import KeyRouterLink from './KeyRouterLink.vue'
 export default class NavigatableListItem extends Vue {
   @Prop() keyRouteProp!: NodePathItem[]
   focused: boolean = false
+  @Prop({type: Boolean}) disabled!: boolean
 }
 </script>
 
@@ -35,6 +37,10 @@ export default class NavigatableListItem extends Vue {
   &--focus {
     /*color: #9EE749;*/
     background-color: #3C72A6;
+  }
+
+  &:disabled {
+    border: 1px gray dot-dash;
   }
 }
 </style>

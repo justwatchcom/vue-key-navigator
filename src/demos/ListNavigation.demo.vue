@@ -15,6 +15,7 @@
         v-for="n in count"
         :key="n"
         :keyRouteProp="[{ name: 'titles' },{ name: 'new' },{ name: 'title', params: { id: n }}]"
+        disabled
       />
     </VbCard>
     <VbCard title="menu -> item id" width="210px">
