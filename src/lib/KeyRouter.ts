@@ -142,18 +142,30 @@ export class KeyRouter {
   }
 
   private isInDirection (base: Position, satellite: Position, direction: NavigationServiceDirection): boolean {
-    let abs = { x: satellite.x - base.x, y: satellite.y - base.y }
+    /**
+     * \  T  /
+     *   \ /
+     * L  X  R
+     *   / \
+     * /  B  \
+     */
+
+    const position = { x: satellite.x - base.x, y: satellite.y - base.y }
     if (direction === NavigationServiceDirection.Left) {
-      return abs.x < 0
+      // 0.75π - 1.25π
+      return (position.x < 0) && (Math.abs(position.x) >= Math.abs(position.y))
     }
     if (direction === NavigationServiceDirection.Right) {
-      return abs.x > 0
+      // 1.75π - 0.25π
+      return (position.x > 0) && (Math.abs(position.x) >= Math.abs(position.y))
     }
     if (direction === NavigationServiceDirection.Up) {
-      return abs.y < 0
+      // 0.25π - 0.75π
+      return (position.y < 0) && (Math.abs(position.y) >= Math.abs(position.x))
     }
     if (direction === NavigationServiceDirection.Down) {
-      return abs.y > 0
+      // 1.25π - 1.75π
+      return (position.y > 0) && (Math.abs(position.y) >= Math.abs(position.x))
     }
     return false
   }
