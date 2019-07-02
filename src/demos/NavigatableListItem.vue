@@ -1,12 +1,12 @@
 <template>
-  <KeyRouterLink
-    class="NavigatableListItem"
-    :class="{'NavigatableListItem--focus': focused}"
-    :route="keyRouteProp"
-    :focused.sync="focused"
-    :disabled="disabled"
-  >
-    Focus: {{focused}}
+  <KeyRouterLink :route="keyRouteProp" v-slot="{ isFocused }">
+    <div
+      class="NavigatableListItem"
+      :class="{'NavigatableListItem--focus': isFocused}"
+      :disabled="disabled"
+    >
+      {{isFocused}}
+    </div>
   </KeyRouterLink>
 </template>
 
@@ -20,7 +20,6 @@ import KeyRouterLink from './KeyRouterLink.vue'
 })
 export default class NavigatableListItem extends Vue {
   @Prop() keyRouteProp!: NodePathItem[]
-  focused: boolean = false
   @Prop({type: Boolean}) disabled!: boolean
 }
 </script>
