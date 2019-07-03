@@ -1,10 +1,11 @@
 {
   "name": "vue-key-navigator",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.6",
   "private": false,
   "license": "MIT",
   "main": "dist/src/index.esm.js",
   "module": "dist/src/index.esm.js",
+  "types": "src/lib/KeyRouterPlugin.d.ts",
   "scripts": {
     "serve": "vue-cli-service serve src/book-app/book-app-main.ts",
     "build": "rollup -c",
