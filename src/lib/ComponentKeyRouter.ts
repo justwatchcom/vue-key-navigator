@@ -16,6 +16,10 @@ export class ComponentKeyRouter {
     this.component = component
   }
 
+  getClientRect(): ClientRect {
+    return this.component.$el.getBoundingClientRect()
+  }
+
   get position (): Position {
     const el = this.component.$el
     let rect = el.getBoundingClientRect()

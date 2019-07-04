@@ -6,6 +6,9 @@ yarn install
 ```
 
 ### Compiles and hot-reloads for development
+
+You are presented with a number of demos.
+
 ```
 yarn run serve
 ```

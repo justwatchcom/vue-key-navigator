@@ -2,6 +2,16 @@ import { KeyRouterPluginOptions, KeyRouterNode } from './plugin'
 import { ComponentKeyRouter } from './ComponentKeyRouter'
 import { KeyRouterMixin } from './KeyRouterMixin'
 import { isSameRoot } from './key-router-helpers'
+import { findClosestCorner } from './container-classes/container-helpers'
+import PositionedRectangle from './container-classes/PositionedRectangle'
+import Point from './container-classes/Point'
+
+export enum Direction {
+  Up = 'up',
+  Down = 'down',
+  Left = 'left',
+  Right = 'right',
+}
 
 export enum NavigationServiceDirection {
   Up = 'up',
@@ -97,7 +107,6 @@ export class KeyRouter {
           // We can register overrides for specific direction in component.
           // When that's the case KeyRouter doesn't perform any actions.
           const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(lowerCaseAction)
-          console.log('directionOverride', directionOverride)
           if (directionOverride) {
             directionOverride()
             e.preventDefault()
@@ -117,12 +126,15 @@ export class KeyRouter {
 
   findClosest (
     currentComponentKeyRouter: ComponentKeyRouter,
-    navigationServiceDirection: NavigationServiceDirection,
+    direction: Direction,
   ): ComponentKeyRouter | null {
-    let currentElementPosition = currentComponentKeyRouter.position
+    const currentElementClientRect: ClientRect = currentComponentKeyRouter.getClientRect()
+    const currentElementCenterPoint: Point = PositionedRectangle.createFromDomRectangle(currentElementClientRect).getCenter()
 
-    let closestLocalKeyNavigator: ComponentKeyRouter | null = null
-    let closestDistance = Infinity
+    let closestComponentKeyRouter: ComponentKeyRouter | null = null
+    let closestDistanceInMainDirection = Infinity
+    let closestDistanceInSecondaryDirection = Infinity
+
     this.componentKeyRouters.forEach(componentKeyRouter => {
       // Ignore current component.
       if (currentComponentKeyRouter === componentKeyRouter) {
@@ -137,52 +149,55 @@ export class KeyRouter {
         return
       }
       // Ignore components in other directions.
-      const position = componentKeyRouter.position
-      if (!this.isInDirection(currentElementPosition, position, navigationServiceDirection)) {
+      // TODO Might make sense to filter out definitely wrong options to save some CPU cycles.
+      // const position = componentKeyRouter.position
+      // if (!this.isInDirection(currentElementClientRect, position, navigationServiceDirection)) {
+      //   return
+      // }
+
+      // Find distance to closest corner
+      // TODO Extract to function and do some test coverage.
+      const closestCorner = findClosestCorner(currentElementClientRect, componentKeyRouter.getClientRect())
+      console.log('closestCorner', closestCorner)
+
+      const distanceX = closestCorner.x - currentElementCenterPoint.x
+      const distanceY = closestCorner.y - currentElementCenterPoint.y
+      const isHorizontal = [Direction.Left, Direction.Right].includes(direction)
+      const isPositive = [Direction.Right, Direction.Down].includes(direction)
+
+      let result = [distanceX, distanceY]
+      if (!isHorizontal) {
+        result = result.reverse()
+      }
+      if (!isPositive) {
+        result = result.map(a => -a)
+      }
+      let [distanceInMainDirection, distanceInSecondaryDirection] = result
+
+      // We don't care if secondary direction is positive or negative
+      distanceInSecondaryDirection = Math.abs(distanceInSecondaryDirection)
+
+      if (distanceInMainDirection <= 0 ) {
         return
       }
-      // Find the closest one
-      const distance = this.getDistance(currentElementPosition, position)
-      if (distance < closestDistance) {
-        closestLocalKeyNavigator = componentKeyRouter
-        closestDistance = distance
+
+      console.log('[distanceInMainDirection, distanceInSecondaryDirection]', [distanceInMainDirection, distanceInSecondaryDirection])
+
+      if (distanceInMainDirection < closestDistanceInMainDirection) {
+        closestDistanceInMainDirection = distanceInMainDirection
+        closestComponentKeyRouter = componentKeyRouter
+        return
       }
+      if (distanceInMainDirection === closestDistanceInMainDirection) {
+        if (distanceInSecondaryDirection < closestDistanceInSecondaryDirection) {
+          closestDistanceInSecondaryDirection = distanceInSecondaryDirection
+          closestComponentKeyRouter = componentKeyRouter
+          return
+        }
+      }
+
     })
-    return closestLocalKeyNavigator
-  }
-
-  private isInDirection (base: Position, satellite: Position, direction: NavigationServiceDirection): boolean {
-    /**
-     * \  T  /
-     *   \ /
-     * L  X  R
-     *   / \
-     * /  B  \
-     */
-
-    const position = { x: satellite.x - base.x, y: satellite.y - base.y }
-    if (direction === NavigationServiceDirection.Left) {
-      // 0.75π - 1.25π
-      return (position.x < 0) && (Math.abs(position.x) >= Math.abs(position.y))
-    }
-    if (direction === NavigationServiceDirection.Right) {
-      // 1.75π - 0.25π
-      return (position.x > 0) && (Math.abs(position.x) >= Math.abs(position.y))
-    }
-    if (direction === NavigationServiceDirection.Up) {
-      // 0.25π - 0.75π
-      return (position.y < 0) && (Math.abs(position.y) >= Math.abs(position.x))
-    }
-    if (direction === NavigationServiceDirection.Down) {
-      // 1.25π - 1.75π
-      return (position.y > 0) && (Math.abs(position.y) >= Math.abs(position.x))
-    }
-    return false
-  }
-
-  private getDistance (base: Position, satellite: Position): number {
-    let abs = { x: satellite.x - base.x, y: satellite.y - base.y }
-    return Math.sqrt(abs.x * abs.x + abs.y * abs.y)
+    return closestComponentKeyRouter
   }
 
   get focusedComponentKeyRouter (): ComponentKeyRouter {

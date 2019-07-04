@@ -3,9 +3,7 @@
     class="NavigatableListItem"
     :class="{'NavigatableListItem--focus': focused}"
     :disabled="disabled"
-  >
-    Focused: {{ focused }}
-  </div>
+  />
 </template>
 
 <script lang="ts">
@@ -35,7 +33,7 @@ export default class NavigatableListItem extends Vue {
     background-color: #3C72A6;
   }
 
-  border: 2px solid transparent;
+  border: 2px solid #b01f14;
   &[disabled] {
     border: 2px dashed #9f7a77;
   }

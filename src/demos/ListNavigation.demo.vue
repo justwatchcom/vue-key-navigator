@@ -57,6 +57,14 @@ import KeyNavigatorInfo from '../lib/KeyRouterrInfo.vue'
 })
 export default class NavigationDemo extends Vue {
   count = 4
+
+  created () {
+    this.$keyRouter.push([
+      { name: 'titles' },
+      { name: 'popular' },
+      { name: 'title', params: { id: 1 } },
+    ])
+  }
 }
 </script>
 
