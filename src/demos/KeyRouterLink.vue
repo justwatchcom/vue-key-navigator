@@ -2,7 +2,6 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import { Mixins } from 'vue-mixin-decorator'
 import { KeyRouterMixin } from '../lib/KeyRouterMixin'
-import { NodePathItem } from '../lib/KeyRouter'
 
 @Component({})
 export default class KeyRouterLink extends Mixins<KeyRouterMixin>(KeyRouterMixin) {
@@ -16,11 +15,6 @@ export default class KeyRouterLink extends Mixins<KeyRouterMixin>(KeyRouterMixin
       isFocused: this.isFocused,
     })
   }
-
-  @Prop() route!: NodePathItem[]
-  nodePath: NodePathItem[] = this.route
-
-  @Prop({type: Boolean, default: false}) disabled!: boolean
 
   @Watch('isFocused', { immediate: true })
   onFocused (isFocused: boolean): void {

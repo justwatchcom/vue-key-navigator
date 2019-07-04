@@ -1,15 +1,28 @@
 import Vue from 'vue'
-import { Prop } from 'vue-property-decorator'
 import { Mixin } from 'vue-mixin-decorator'
+import { Prop } from 'vue-property-decorator'
+
 import { ComponentKeyRouter } from './ComponentKeyRouter'
 import { NodePathItem } from './KeyRouter'
+
+export type DirectionOverride = (() => void) | null
+
+// NOTE We probably don't need this mixin and instead should use component.
+// The reason being component doesn't pollute dom (no wrapper).
+// Upside of using mixin is that it provides an interface between component and service,
+// so they're not bound too tight.
 
 @Mixin
 export class KeyRouterMixin extends Vue {
   $componentKeyRouter!: ComponentKeyRouter
-  nodePath!: NodePathItem[]
 
+  @Prop({required: true, type: Array}) nodePath!: NodePathItem[]
   @Prop({type: Boolean, default: false}) disabled!: boolean
+
+  @Prop({type: Function}) overrideLeft!: DirectionOverride
+  @Prop({type: Function}) overrideRight!: DirectionOverride
+  @Prop({type: Function}) overrideUp!: DirectionOverride
+  @Prop({type: Function}) overrideDown!: DirectionOverride
 
   beforeCreate () {
     if (!this.$keyRouter) {

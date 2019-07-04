@@ -12,3 +12,7 @@ declare module 'vue/types/vue' {
 //     subs?: {[key: string]: (...args: any[]) => void}
 //   }
 // }
+
+export { VueKeyNavigatorPlugin } from './plugin'
+
+export { default as KeyRouterLink } from '../demos/KeyRouterLink.vue'

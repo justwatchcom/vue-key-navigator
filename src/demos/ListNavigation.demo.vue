@@ -1,31 +1,40 @@
 <template>
   <VbDemo>
-    <VbCard title="titles -> popular -> title id" width="210px">
+    <VbCard title="titles -> popular -> title id" width="220px">
       <button style="flex: 1 0 100%;" @click="$keyRouter.nodePath = [{ name: 'titles' },{ name: 'popular' },{ name: 'title', params: { id: 1 }}]">Switch to title</button>
       <div>
-        <NavigatableListItem
+        <KeyRouterLink
           v-for="n in count"
           :key="n"
-          :keyRouteProp="[{ name: 'titles' },{ name: 'popular' },{ name: 'title', params: { id: n }}]"
-        />
+          :nodePath="[{ name: 'titles' },{ name: 'popular' },{ name: 'title', params: { id: n }}]"
+          v-slot="{ isFocused }"
+        >
+          <NavigatableListItem :focused="isFocused"/>
+        </KeyRouterLink>
       </div>
     </VbCard>
-    <VbCard title="titles -> new -> title id" width="210px">
-      <NavigatableListItem
+    <VbCard title="titles -> new -> title id (disabled)" width="220px">
+      <KeyRouterLink
         v-for="n in count"
         :key="n"
-        :keyRouteProp="[{ name: 'titles' },{ name: 'new' },{ name: 'title', params: { id: n }}]"
+        :nodePath="[{ name: 'titles' },{ name: 'new' },{ name: 'title', params: { id: n }}]"
+        v-slot="{ isFocused }"
         disabled
-      />
+      >
+        <NavigatableListItem disabled :focused="isFocused"/>
+      </KeyRouterLink>
     </VbCard>
-    <VbCard title="menu -> item id" width="210px">
+    <VbCard title="menu -> item id" width="220px">
       <button @click="$keyRouter.nodePath = [{ name: 'menu' }, { name: 'item', params: { id: 1 }}]">Switch to menu</button>
       <div>
-        <NavigatableListItem
+        <KeyRouterLink
           v-for="n in count"
           :key="n"
-          :keyRouteProp="[{ name: 'menu' }, { name: 'item', params: { id: n }}]"
-        />
+          :nodePath="[{ name: 'menu' }, { name: 'item', params: { id: n }}]"
+          v-slot="{ isFocused }"
+        >
+          <NavigatableListItem :focused="isFocused"/>
+        </KeyRouterLink>
       </div>
     </VbCard>
     <VbCard title="Key navigator info">

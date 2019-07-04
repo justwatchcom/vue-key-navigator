@@ -58,6 +58,10 @@ export class KeyRouter {
     this.registerGlobalKeyEvents()
   }
 
+  push (nodePath: NodePathItem[]): void {
+    this.nodePath = nodePath
+  }
+
   register (component: KeyRouterMixin): ComponentKeyRouter {
     const componentKeyRouter = new ComponentKeyRouter(this, component)
     this.componentKeyRouters.push(componentKeyRouter)
@@ -83,25 +87,31 @@ export class KeyRouter {
 
       switch (lowerCaseAction) {
         case NavigationServiceDirection.Enter:
-          this.focusedComponentKeyRouter.component.$emit('select')
+          this.focusedComponentKeyRouter.triggerSelect()
           e.preventDefault()
           break
         case NavigationServiceDirection.Back:
           // this.back(e)
           break
         default:
+          // We can register overrides for specific direction in component.
+          // When that's the case KeyRouter doesn't perform any actions.
+          const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(lowerCaseAction)
+          console.log('directionOverride', directionOverride)
+          if (directionOverride) {
+            directionOverride()
+            e.preventDefault()
+            break
+          }
+
           const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, lowerCaseAction)
           if (componentKeyRouter) {
             componentKeyRouter.selectRoute()
           }
 
-          // this.findClosest(this.currentElement, lowerCaseAction, e)
           e.preventDefault()
           break
       }
-    })
-    document.addEventListener('backbutton', (e: Event) => {
-      // this.back(e)
     })
   }
 
