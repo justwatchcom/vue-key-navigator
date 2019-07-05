@@ -35,7 +35,7 @@ import KeyNavigatorInfo from '../lib/KeyRouterrInfo.vue'
 @Component({
   components: { KeyNavigatorInfo, NavigatableListItem },
 })
-export default class СaseADemo extends Vue {
+export default class StraignNavigation extends Vue {
   created () {
     this.$keyRouter.push([
       { name: 'items' },

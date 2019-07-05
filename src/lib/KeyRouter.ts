@@ -106,23 +106,23 @@ export class KeyRouter {
         return
       }
 
-      if (lowerCaseAction in Direction) {
-        // We can register overrides for specific direction in component.
-        // When that's the case KeyRouter doesn't perform any actions.
-        const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(<Direction>lowerCaseAction)
-        if (directionOverride) {
-          directionOverride()
-          e.preventDefault()
-          return
-        }
+      lowerCaseAction as Direction
 
-        const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, <Direction>lowerCaseAction)
-        if (componentKeyRouter) {
-          componentKeyRouter.selectRoute()
-        }
-
+      // We can register overrides for specific direction in component.
+      // When that's the case KeyRouter doesn't perform any actions.
+      const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(<Direction>lowerCaseAction)
+      if (directionOverride) {
+        directionOverride()
         e.preventDefault()
+        return
       }
+
+      const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, <Direction>lowerCaseAction)
+      if (componentKeyRouter) {
+        componentKeyRouter.selectRoute()
+      }
+
+      e.preventDefault()
     })
   }
 
@@ -179,7 +179,7 @@ export class KeyRouter {
       // We don't care if secondary direction is positive or negative
       distanceInSecondaryDirection = Math.abs(distanceInSecondaryDirection)
 
-      if (distanceInMainDirection <= 0 ) {
+      if (distanceInMainDirection <= 0) {
         return
       }
 
