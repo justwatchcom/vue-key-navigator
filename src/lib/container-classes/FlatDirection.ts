@@ -16,7 +16,7 @@ export default class FlatDirection {
     })
   }
 
-  toString (): string {
+  getString (): 'left' | 'right' | 'bottom' |'top' {
     if (this.x) {
       return this.positive ? 'right' : 'left'
     }

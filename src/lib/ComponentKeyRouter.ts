@@ -2,7 +2,7 @@ import {
   KeyRouter,
   Position,
   NodePathItem,
-  NavigationServiceDirection,
+  NavigationServiceDirection, Direction,
 } from './KeyRouter'
 import { KeyRouterMixin, DirectionOverride } from './KeyRouterMixin'
 import { isCurrentRoute } from './key-router-helpers'
@@ -36,17 +36,17 @@ export class ComponentKeyRouter {
     this.globalKeyNavigator.nodePath = [...this.component.nodePath]
   }
 
-  getOverrideForDirection (direction: NavigationServiceDirection): DirectionOverride {
-    if (direction === NavigationServiceDirection.Left) {
+  getOverrideForDirection (direction: Direction): DirectionOverride {
+    if (direction === Direction.Left) {
       return this.component.overrideLeft
     }
-    if (direction === NavigationServiceDirection.Right) {
+    if (direction === Direction.Right) {
       return this.component.overrideRight
     }
-    if (direction === NavigationServiceDirection.Up) {
+    if (direction === Direction.Up) {
       return this.component.overrideUp
     }
-    if (direction === NavigationServiceDirection.Down) {
+    if (direction === Direction.Down) {
       return this.component.overrideDown
     }
     throw new Error(`Unknown direction: ${direction}`)

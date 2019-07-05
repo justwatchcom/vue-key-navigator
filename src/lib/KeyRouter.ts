@@ -89,37 +89,39 @@ export class KeyRouter {
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       const keyCode = e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which
       let keyName = this.keyCodes[keyCode]
-      if (!keyName || !(keyName in NavigationServiceDirection)) {
+      if (!keyName || !(keyName in NavigationServiceDirection || keyName in Direction)) {
         return
       }
 
-      let lowerCaseAction = <NavigationServiceDirection>keyName.toLowerCase()
+      let lowerCaseAction = <NavigationServiceDirection | Direction>keyName.toLowerCase()
 
-      switch (lowerCaseAction) {
-        case NavigationServiceDirection.Enter:
-          this.focusedComponentKeyRouter.triggerSelect()
+      if (lowerCaseAction === NavigationServiceDirection.Enter) {
+        this.focusedComponentKeyRouter.triggerSelect()
+        e.preventDefault()
+        return
+      }
+
+      if (lowerCaseAction === NavigationServiceDirection.Back) {
+        // this.back(e)
+        return
+      }
+
+      if (lowerCaseAction in Direction) {
+        // We can register overrides for specific direction in component.
+        // When that's the case KeyRouter doesn't perform any actions.
+        const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(<Direction>lowerCaseAction)
+        if (directionOverride) {
+          directionOverride()
           e.preventDefault()
-          break
-        case NavigationServiceDirection.Back:
-          // this.back(e)
-          break
-        default:
-          // We can register overrides for specific direction in component.
-          // When that's the case KeyRouter doesn't perform any actions.
-          const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(lowerCaseAction)
-          if (directionOverride) {
-            directionOverride()
-            e.preventDefault()
-            break
-          }
+          return
+        }
 
-          const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, lowerCaseAction)
-          if (componentKeyRouter) {
-            componentKeyRouter.selectRoute()
-          }
+        const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, <Direction>lowerCaseAction)
+        if (componentKeyRouter) {
+          componentKeyRouter.selectRoute()
+        }
 
-          e.preventDefault()
-          break
+        e.preventDefault()
       }
     })
   }

@@ -31,7 +31,7 @@ export default class Point {
     return new Direction(degrees)
   }
 
-  getInDirection (direction: FlatDirection): Number {
+  getInDirection (direction: FlatDirection): number {
     return direction.x ? this.x : this.y
   }
 

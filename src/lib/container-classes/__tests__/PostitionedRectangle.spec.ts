@@ -37,15 +37,19 @@ describe('PositionedRectangle', () => {
   })
   it('overlaps', () => {
     const main = PositionedRectangle.createFromDomRectangle({
+      left: 0,
+      top: 0,
       width: 10,
       height: 10
     })
     const inbound = PositionedRectangle.createFromDomRectangle({
+      top: 0,
       left: 5,
       width: 10,
       height: 10
     })
     const outbound = PositionedRectangle.createFromDomRectangle({
+      top: 0,
       left: 10,
       width: 5,
       height: 5
@@ -57,6 +61,8 @@ describe('PositionedRectangle', () => {
   it('moveAwayFrom', () => {
     // active encroaches on stable. We want to separate active
     const active = PositionedRectangle.createFromDomRectangle({
+      left: 0,
+      top: 0,
       width: 10,
       height: 10
     })
@@ -69,54 +75,24 @@ describe('PositionedRectangle', () => {
   it('isInside', () => {
     // active encroaches on stable. We want to separate active
     const container = PositionedRectangle.createFromDomRectangle({
+      left: 0,
+      top: 0,
       width: 5,
       height: 5
     })
     const inside = PositionedRectangle.createFromDomRectangle({
+      left: 0,
+      top: 0,
       width: 4,
       height: 4
     })
     const outside = PositionedRectangle.createFromDomRectangle({
+      left: 0,
+      top: 0,
       width: 6,
       height: 6
     })
     expect(inside.isInside(container)).toBe(true)
     expect(outside.isInside(container)).toBe(false)
-  })
-
-  xit('fitInto', () => {
-    // active encroaches on stable. We want to separate active
-    const active = PositionedRectangle.createFromDomRectangle({
-      left: -2,
-      width: 5,
-      height: 5
-    })
-    const stable = PositionedRectangle.createFromDomRectangle({
-      width: 10,
-      height: 10
-    })
-    const result = active.fitInto(stable)
-    expect(result.left).toBe(0)
-  })
-  xit('fitInto2', () => {
-    // active encroaches on stable. We want to separate active
-    const container = PositionedRectangle.createFromDomRectangle({
-      bottom: 923,
-      height: 873,
-      left: 50,
-      right: 1498,
-      top: 50,
-      width: 1448,
-    })
-    const stable = PositionedRectangle.createFromDomRectangle({
-      bottom: 1164,
-      height: 228,
-      left: 1198,
-      right: 1498,
-      top: 936,
-      width: 300,
-    })
-    const result = stable.fitInto(container)
-    expect(result.bottom).toBe(container.bottom)
   })
 })

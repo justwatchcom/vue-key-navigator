@@ -47,14 +47,14 @@ export default class PositionedRectangle {
     Object.assign(this, data)
   }
 
-  static createFromDomRectangle (domRectangle: ClientRect): PositionedRectangle {
+  static createFromDomRectangle (rectangle: {left: number, top: number, width: number, height: number}): PositionedRectangle {
     return new PositionedRectangle({
       coordinate: new Point({
-        x: domRectangle.left || 0,
-        y: domRectangle.top || 0,
+        x: rectangle.left || 0,
+        y: rectangle.top || 0,
       }),
-      width: domRectangle.width,
-      height: domRectangle.height,
+      width: rectangle.width,
+      height: rectangle.height,
     })
   }
 
@@ -103,8 +103,8 @@ export default class PositionedRectangle {
 
     const direction = coordinate.getGeneralDirectionTo(this.getCenter())
     const result = new PositionedRectangle(this)
-    result[direction.invert()
-      .toString()] = coordinate.getInDirection(direction)
+
+    result[direction.invert().getString()] = coordinate.getInDirection(direction)
     return result
   }
 
@@ -123,81 +123,11 @@ export default class PositionedRectangle {
     return new Point({ x, y })
   }
 
-  fitInto (container: PositionedRectangle): PositionedRectangle {
-    // Already inside, no need to move
-    if (this.isInside(container)) {
-      return new PositionedRectangle(this)
-    }
-    // Won't fit.
-    if (!this.fitsInto(container)) {
-      return new PositionedRectangle(this)
-    }
-
-    let result = this.moveInsideContainerAxisDirected(container)
-    if (!result.isInside(container)) {
-      result = result.moveInsideContainerAxisDirected(container)
-    }
-
-    return result
-  }
-
-  fitAround(target: PositionedRectangle): void {
-    this.coordinate = target.coordinate
-
-    if(this.canFitToBottom(target)){
-      this.fitToBottom(target)
-      return
-    }
-    if(this.canFitToTop(target)){
-      this.fitToTop(target)
-      return
-    }
-
-    this.fitToBottom(target)
-  }
-
-  fitToBottom(target: PositionedRectangle): PositionedRectangle{
-    this.top = target.bottom
-    this.width = target.width
-  }
-  fitToTop(target: PositionedRectangle): PositionedRectangle{
-    this.bottom = target.top
-    this.width = target.width
-  }
-  canFitToBottom(target: PositionedRectangle): Bolean{
-    const container = PositionedRectangle.createForWindow()
-    return target.bottom + this.height <= container.bottom
-  }
-  canFitToTop(target: PositionedRectangle): Bolean{
-    const container = PositionedRectangle.createForWindow()
-    return target.top - this.height >= container.top
-  }
-
-  static createForWindow(padding: number = 1): PositionedRectangle {
-    // TODO Probably makes sense to handle this outside of window to keep lib clean.
-    return  PositionedRectangle.createFromDomRectangle({
-      left: padding,
-      top: padding,
-      right: padding,
-      bottom: padding,
-      width: window.innerWidth - padding * 2,
-      height: window.innerHeight - padding * 2,
-    })
-  }
-
   findClosestCorner (coordinate: Point): Point {
     const center = this.getCenter()
     return new Point({
       x: center.x > coordinate.x ? this.left : this.right,
       y: center.y > coordinate.y ? this.bottom : this.top,
-    })
-  }
-
-  findFurthestCorner (coordinate: Point): Point {
-    const center = this.getCenter()
-    return new Point({
-      x: center.x < coordinate.x ? this.left : this.right,
-      y: center.y < coordinate.y ? this.bottom : this.top,
     })
   }
 }
