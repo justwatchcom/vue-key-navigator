@@ -158,7 +158,6 @@ export class KeyRouter {
       // Find distance to closest corner
       // TODO Extract to function and do some test coverage.
       const closestCorner = findClosestCorner(currentElementClientRect, componentKeyRouter.getClientRect())
-      console.log('closestCorner', closestCorner)
 
       const distanceX = closestCorner.x - currentElementCenterPoint.x
       const distanceY = closestCorner.y - currentElementCenterPoint.y
@@ -174,6 +173,7 @@ export class KeyRouter {
       }
       let [distanceInMainDirection, distanceInSecondaryDirection] = result
 
+
       // We don't care if secondary direction is positive or negative
       distanceInSecondaryDirection = Math.abs(distanceInSecondaryDirection)
 
@@ -181,21 +181,20 @@ export class KeyRouter {
         return
       }
 
-      console.log('[distanceInMainDirection, distanceInSecondaryDirection]', [distanceInMainDirection, distanceInSecondaryDirection])
+      // console.log('[distanceInMainDirection, distanceInSecondaryDirection]', [Math.round(distanceInMainDirection), Math.round(distanceInSecondaryDirection)])
 
-      if (distanceInMainDirection < closestDistanceInMainDirection) {
-        closestDistanceInMainDirection = distanceInMainDirection
+      if (distanceInSecondaryDirection < closestDistanceInSecondaryDirection) {
+        closestDistanceInSecondaryDirection = distanceInSecondaryDirection
         closestComponentKeyRouter = componentKeyRouter
         return
       }
-      if (distanceInMainDirection === closestDistanceInMainDirection) {
-        if (distanceInSecondaryDirection < closestDistanceInSecondaryDirection) {
-          closestDistanceInSecondaryDirection = distanceInSecondaryDirection
+      if (distanceInSecondaryDirection === closestDistanceInSecondaryDirection) {
+        if (distanceInMainDirection < closestDistanceInMainDirection) {
+          closestDistanceInMainDirection = distanceInMainDirection
           closestComponentKeyRouter = componentKeyRouter
           return
         }
       }
-
     })
     return closestComponentKeyRouter
   }
