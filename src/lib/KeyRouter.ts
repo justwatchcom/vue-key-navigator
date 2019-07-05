@@ -2,7 +2,10 @@ import { KeyRouterPluginOptions, KeyRouterNode } from './plugin'
 import { ComponentKeyRouter } from './ComponentKeyRouter'
 import { KeyRouterMixin } from './KeyRouterMixin'
 import { isSameRoot } from './key-router-helpers'
-import { findClosestCorner } from './container-classes/container-helpers'
+import {
+  findClosestCorner,
+  isStraightInDirection, getDistance, isInDirection,
+} from './container-classes/container-helpers'
 import PositionedRectangle from './container-classes/PositionedRectangle'
 import Point from './container-classes/Point'
 
@@ -133,9 +136,9 @@ export class KeyRouter {
     const currentElementClientRect: ClientRect = currentComponentKeyRouter.getClientRect()
     const currentElementCenterPoint: Point = PositionedRectangle.createFromDomRectangle(currentElementClientRect).getCenter()
 
+    let closestComponentisStraightInDirection = false
     let closestComponentKeyRouter: ComponentKeyRouter | null = null
-    let closestDistanceInMainDirection = Infinity
-    let closestDistanceInSecondaryDirection = Infinity
+    let closestDistance = Infinity
 
     this.componentKeyRouters.forEach(componentKeyRouter => {
       // Ignore current component.
@@ -150,52 +153,38 @@ export class KeyRouter {
       if (!isSameRoot(currentComponentKeyRouter.nodePath, componentKeyRouter.nodePath)) {
         return
       }
+
+      const componentClientRect = componentKeyRouter.getClientRect()
+
       // Ignore components in other directions.
-      // TODO Might make sense to filter out definitely wrong options to save some CPU cycles.
-      // const position = componentKeyRouter.position
-      // if (!this.isInDirection(currentElementClientRect, position, navigationServiceDirection)) {
-      //   return
-      // }
-
-      // Find distance to closest corner
-      // TODO Extract to function and do some test coverage.
-      const closestCorner = findClosestCorner(currentElementClientRect, componentKeyRouter.getClientRect())
-
-      const distanceX = closestCorner.x - currentElementCenterPoint.x
-      const distanceY = closestCorner.y - currentElementCenterPoint.y
-      const isHorizontal = [Direction.Left, Direction.Right].includes(direction)
-      const isPositive = [Direction.Right, Direction.Down].includes(direction)
-
-      let result = [distanceX, distanceY]
-      if (!isHorizontal) {
-        result = result.reverse()
-      }
-      if (!isPositive) {
-        result = result.map(a => -a)
-      }
-      let [distanceInMainDirection, distanceInSecondaryDirection] = result
-
-
-      // We don't care if secondary direction is positive or negative
-      distanceInSecondaryDirection = Math.abs(distanceInSecondaryDirection)
-
-      if (distanceInMainDirection <= 0) {
+      if (!isInDirection(currentElementClientRect, componentClientRect, direction)) {
         return
       }
 
-      // console.log('[distanceInMainDirection, distanceInSecondaryDirection]', [Math.round(distanceInMainDirection), Math.round(distanceInSecondaryDirection)])
-
-      if (distanceInSecondaryDirection < closestDistanceInSecondaryDirection) {
-        closestDistanceInSecondaryDirection = distanceInSecondaryDirection
-        closestComponentKeyRouter = componentKeyRouter
-        return
-      }
-      if (distanceInSecondaryDirection === closestDistanceInSecondaryDirection) {
-        if (distanceInMainDirection < closestDistanceInMainDirection) {
-          closestDistanceInMainDirection = distanceInMainDirection
+      const componentIsStraightInDirection = isStraightInDirection(currentElementClientRect, componentClientRect, direction)
+      if (componentIsStraightInDirection) {
+        // First component is straight in direction
+        if (!closestComponentisStraightInDirection) {
+          closestComponentisStraightInDirection = true
           closestComponentKeyRouter = componentKeyRouter
+          closestDistance = getDistance(currentElementClientRect, componentClientRect)
           return
         }
+        // Second straight in direction component
+        const distance = getDistance(currentElementClientRect, componentClientRect)
+        if (closestDistance > distance) {
+          closestDistance = distance
+          closestComponentKeyRouter = componentKeyRouter
+        }
+        return
+      } else if (closestComponentisStraightInDirection) {
+        return
+      }
+
+      const distance = getDistance(currentElementClientRect, componentClientRect)
+      if (closestDistance > distance) {
+        closestDistance = distance
+        closestComponentKeyRouter = componentKeyRouter
       }
     })
     return closestComponentKeyRouter
