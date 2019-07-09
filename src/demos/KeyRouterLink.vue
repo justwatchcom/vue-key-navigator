@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Prop, Watch } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import { Mixins } from 'vue-mixin-decorator'
 import { KeyRouterMixin } from '../lib/KeyRouterMixin'
 

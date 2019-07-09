@@ -1,17 +1,4 @@
-import PositionedRectangle from './PositionedRectangle'
-import Point from './Point'
 import { Direction } from '../KeyRouter'
-
-/**
- * @deprecated
- */
-export function findClosestCorner (base: ClientRect, satellite: ClientRect): Point {
-  const baseCenter = PositionedRectangle.createFromDomRectangle(base).getCenter()
-
-  const satelliteRectangle = PositionedRectangle.createFromDomRectangle(satellite)
-
-  return satelliteRectangle.findClosestCorner(baseCenter)
-}
 
 export function getCenter(clientRect: ClientRect) {
   return {

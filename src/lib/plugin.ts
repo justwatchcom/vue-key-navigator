@@ -3,14 +3,8 @@ import { Vue as _Vue } from 'vue/types/vue'
 import { KeyRouter, NodePathItem } from './KeyRouter'
 import KeyRouterLink from '../demos/KeyRouterLink.vue'
 
-export interface KeyRouterNode {
-  name: string,
-  children: KeyRouterNode[]
-}
-
 export interface KeyRouterPluginOptions {
   disabled?: boolean,
-  keyRouterNodes?: KeyRouterNode[],
   nodePath?: NodePathItem[]
 }
 

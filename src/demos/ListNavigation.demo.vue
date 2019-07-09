@@ -1,6 +1,7 @@
 <template>
   <VbDemo>
     <VbCard title="titles -> popular -> title id" width="220px">
+      <button style="flex: 1 0 100%;" @click="$keyRouter.disabled = !$keyRouter.disabled">{{ $keyRouter.disabled ? 'Enable' : 'Disable' }}</button>
       <button style="flex: 1 0 100%;" @click="$keyRouter.nodePath = [{ name: 'titles' },{ name: 'popular' },{ name: 'title', params: { id: 1 }}]">Switch to title</button>
       <div>
         <KeyRouterLink

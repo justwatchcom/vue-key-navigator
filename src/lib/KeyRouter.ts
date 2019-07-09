@@ -1,13 +1,10 @@
-import { KeyRouterPluginOptions, KeyRouterNode } from './plugin'
+import { KeyRouterPluginOptions } from './plugin'
 import { ComponentKeyRouter } from './ComponentKeyRouter'
 import { KeyRouterMixin } from './KeyRouterMixin'
 import { isSameRoot } from './key-router-helpers'
 import {
-  findClosestCorner,
   isStraightInDirection, getDistance, isInDirection,
 } from './container-classes/container-helpers'
-import PositionedRectangle from './container-classes/PositionedRectangle'
-import Point from './container-classes/Point'
 
 export enum Direction {
   Up = 'up',
@@ -36,8 +33,7 @@ export interface Position {
 }
 
 export class KeyRouter {
-  disabled: boolean = false
-  keyRoutes?: KeyRouterNode[]
+  public disabled: boolean = false
   componentKeyRouters: ComponentKeyRouter[] = []
   keyCodes: { [key: number]: string } = {}
   nodePath: NodePathItem[] = []
@@ -46,10 +42,6 @@ export class KeyRouter {
     if (options.disabled) {
       this.disabled = options.disabled
     }
-    if (!Array.isArray(options.keyRouterNodes)) {
-      throw new Error('Please provide some key routes.')
-    }
-    this.keyRoutes = options.keyRouterNodes
 
     if (options.nodePath) {
       this.nodePath = options.nodePath
@@ -86,10 +78,12 @@ export class KeyRouter {
   }
 
   registerGlobalKeyEvents () {
-    if (this.disabled) {
-      return
-    }
+
     document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (this.disabled) {
+        return
+      }
+
       const keyCode = e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which
       let keyName = this.keyCodes[keyCode]
       if (!keyName || !(keyName in NavigationServiceDirection || keyName in Direction)) {
@@ -134,7 +128,6 @@ export class KeyRouter {
     direction: Direction,
   ): ComponentKeyRouter | null {
     const currentElementClientRect: ClientRect = currentComponentKeyRouter.getClientRect()
-    const currentElementCenterPoint: Point = PositionedRectangle.createFromDomRectangle(currentElementClientRect).getCenter()
 
     let closestComponentisStraightInDirection = false
     let closestComponentKeyRouter: ComponentKeyRouter | null = null
