@@ -22,6 +22,11 @@ export enum NavigationServiceDirection {
   Back = 'back',
 }
 
+export interface KeyRouterOptions {
+  disabled?: boolean,
+  nodePath?: NodePathItem[]
+}
+
 export interface NodePathItem {
   name: string
   params?: { [key: string]: any }
@@ -38,7 +43,7 @@ export class KeyRouter {
   keyCodes: { [key: number]: string } = {}
   nodePath: NodePathItem[] = []
 
-  constructor (options: KeyRouterPluginOptions) {
+  constructor (options: KeyRouterOptions) {
     if (options.disabled) {
       this.disabled = options.disabled
     }

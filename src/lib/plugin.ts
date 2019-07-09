@@ -1,15 +1,10 @@
 import { PluginObject } from 'vue'
 import { Vue as _Vue } from 'vue/types/vue'
-import { KeyRouter, NodePathItem } from './KeyRouter'
+import { KeyRouter, KeyRouterOptions } from './KeyRouter'
 import KeyRouterLink from '../demos/KeyRouterLink.vue'
 
-export interface KeyRouterPluginOptions {
-  disabled?: boolean,
-  nodePath?: NodePathItem[]
-}
-
-export const VueKeyNavigatorPlugin: PluginObject<KeyRouterPluginOptions> = {
-  install: (Vue: typeof _Vue, options: KeyRouterPluginOptions = {}): void => {
+export const VueKeyNavigatorPlugin: PluginObject<KeyRouterOptions> = {
+  install: (Vue: typeof _Vue, options: KeyRouterOptions = {}): void => {
     Vue.prototype.$keyRouter = new KeyRouter(options)
 
     // Make object reactive
