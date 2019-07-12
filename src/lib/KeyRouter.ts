@@ -1,10 +1,12 @@
-import { KeyRouterPluginOptions } from './plugin'
 import { ComponentKeyRouter } from './ComponentKeyRouter'
 import { KeyRouterMixin } from './KeyRouterMixin'
 import { isSameRoot } from './key-router-helpers'
 import {
-  isStraightInDirection, getDistance, isInDirection,
+  isStraightInDirection,
+  getDistance,
+  isInDirection,
 } from './container-classes/container-helpers'
+import { NodePathItem, KeyRouterOptions } from './interfaces'
 
 export enum Direction {
   Up = 'up',
@@ -22,34 +24,23 @@ export enum NavigationServiceDirection {
   Back = 'back',
 }
 
-export interface KeyRouterOptions {
-  disabled?: boolean,
-  nodePath?: NodePathItem[]
-}
-
-export interface NodePathItem {
-  name: string
-  params?: { [key: string]: any }
-}
-
-export interface Position {
-  x: number
-  y: number
-}
-
 export class KeyRouter {
   public disabled: boolean = false
+  private isInTransition = false
   componentKeyRouters: ComponentKeyRouter[] = []
   keyCodes: { [key: number]: string } = {}
   nodePath: NodePathItem[] = []
+  transitionTimeout: number = 100
 
   constructor (options: KeyRouterOptions) {
     if (options.disabled) {
       this.disabled = options.disabled
     }
-
     if (options.nodePath) {
       this.nodePath = options.nodePath
+    }
+    if (options.transitionTimeout !== undefined) {
+      this.transitionTimeout = options.transitionTimeout
     }
 
     const keys: { [name: string]: number[] } = {
@@ -108,24 +99,39 @@ export class KeyRouter {
         return
       }
 
-      lowerCaseAction as Direction
-
-      // We can register overrides for specific direction in component.
-      // When that's the case KeyRouter doesn't perform any actions.
-      const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(<Direction>lowerCaseAction)
-      if (directionOverride) {
-        directionOverride()
-        e.preventDefault()
-        return
-      }
-
-      const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, <Direction>lowerCaseAction)
-      if (componentKeyRouter) {
-        componentKeyRouter.selectRoute()
-      }
-
+      this.onDirectionTriggered(lowerCaseAction as Direction)
       e.preventDefault()
     })
+  }
+
+  onDirectionTriggered (direction: Direction): void {
+    if (this.isInTransition) {
+      return
+    }
+
+    // We can register overrides for specific direction in component.
+    // When that's the case KeyRouter doesn't perform any actions.
+    const directionOverride = this.focusedComponentKeyRouter.getOverrideForDirection(direction)
+    if (directionOverride) {
+      directionOverride()
+      return
+    }
+
+    const componentKeyRouter = this.findClosest(this.focusedComponentKeyRouter, direction)
+    if (componentKeyRouter) {
+      componentKeyRouter.selectRoute()
+      this.onInTransition()
+    }
+  }
+
+  // The idea here is to disable directional navigation for time span of transition.
+  onInTransition (): void {
+    if (this.transitionTimeout) {
+      this.isInTransition = true
+      setTimeout(() => {
+        this.isInTransition = false
+      }, this.transitionTimeout)
+    }
   }
 
   findClosest (

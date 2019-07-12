@@ -1,4 +1,4 @@
-import { NodePathItem } from './KeyRouter'
+import { NodePathItem } from './interfaces'
 
 export function isCurrentRoute (keyPath: NodePathItem[], componentKeyPath: NodePathItem[]): boolean {
   if (keyPath.length !== componentKeyPath.length) {

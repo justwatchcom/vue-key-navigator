@@ -1,7 +1,8 @@
 import { PluginObject } from 'vue'
 import { Vue as _Vue } from 'vue/types/vue'
-import { KeyRouter, KeyRouterOptions } from './KeyRouter'
+import { KeyRouter} from './KeyRouter'
 import KeyRouterLink from '../demos/KeyRouterLink.vue'
+import { KeyRouterOptions } from './interfaces'
 
 export const VueKeyNavigatorPlugin: PluginObject<KeyRouterOptions> = {
   install: (Vue: typeof _Vue, options: KeyRouterOptions = {}): void => {
@@ -9,7 +10,6 @@ export const VueKeyNavigatorPlugin: PluginObject<KeyRouterOptions> = {
 
     // Make object reactive
     new Vue({ data: () => ({ keyNavigator: Vue.prototype.$keyRouter }) })
-
     Vue.component('KeyRouterLink', KeyRouterLink)
   },
 }

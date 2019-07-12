@@ -1,5 +1,5 @@
-import { NodePathItem } from '../KeyRouter'
 import { isCurrentRoute } from '../key-router-helpers'
+import { NodePathItem } from '../interfaces'
 
 describe('key-router-helpers', () => {
   describe('isCurrentRoute', () => {

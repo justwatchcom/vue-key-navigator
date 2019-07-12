@@ -3,7 +3,7 @@ import { Mixin } from 'vue-mixin-decorator'
 import { Prop } from 'vue-property-decorator'
 
 import { ComponentKeyRouter } from './ComponentKeyRouter'
-import { NodePathItem } from './KeyRouter'
+import { NodePathItem } from './interfaces'
 
 export type DirectionOverride = (() => void) | null
 

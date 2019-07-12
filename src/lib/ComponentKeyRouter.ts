@@ -1,11 +1,10 @@
 import {
   KeyRouter,
-  Position,
-  NodePathItem,
-  NavigationServiceDirection, Direction,
+  Direction,
 } from './KeyRouter'
 import { KeyRouterMixin, DirectionOverride } from './KeyRouterMixin'
 import { isCurrentRoute } from './key-router-helpers'
+import { Position, NodePathItem } from './interfaces'
 
 export class ComponentKeyRouter {
   globalKeyNavigator: KeyRouter
